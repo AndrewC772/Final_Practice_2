@@ -22,9 +22,18 @@ const unzipper = require("unzipper"),
  */
 const unzip = (pathIn, pathOut) => {
   return new Promise((resolve, reject) => {
-      fs.createReadStream(pathIn)
-      .pipe(unzipper.Extract({ path: pathOut }));
-      resolve("Extraction operation complete")
+    if (fs.existsSync(pathOut) == false) {
+      fs.mkdir(pathOut, (err) => {
+        if (err) {
+          reject(err)
+        } else {
+          console.log(`${pathOut} Folder made`)
+        }
+      })
+    }
+    fs.createReadStream(pathIn)
+    .pipe(unzipper.Extract({ path: pathOut }));
+    resolve("Extraction operation complete")
   })
 };
 
@@ -68,27 +77,15 @@ const readDir = (dir) => {
  * @return {promise}
  */
 const grayScale = (pathIn, pathOut) => {
-  return new Promise((resolve, reject) => {
-    if (fs.existsSync(pathOut) == false) {
-      fs.mkdir(pathOut, (err) => {
-        if (err) {
-          reject(err)
-        } else {
-          console.log(`${pathOut} Folder made`)
-        }
-      })
-    }
     fs.createReadStream(pathIn)
     .pipe(
       new PNG()
     )
-    .on('error', function(err) {
-      console.log(err)
-    })
     .on("parsed", function () {
       for (var y = 0; y < this.height; y++) {
         for (var x = 0; x < this.width; x++) {
           var idx = (this.width * y + x) << 2;
+  
           // invert color
           // this.data[idx] = 255 - this.data[idx];
           // this.data[idx + 1] = 255 - this.data[idx + 1];
@@ -104,15 +101,25 @@ const grayScale = (pathIn, pathOut) => {
           // this.data[idx + 3] = this.data[idx + 3] >> 1;
         }
       }
-      console.log("It did parse")
-      new_filename = path.basename(pathIn)
-      new_path = path.join(`${pathOut}`, `${new_filename}`)
-      console.log(new_path)
-      this.pack().pipe(fs.createWriteStream(new_path));
+
+      this.pack().pipe(fs.createWriteStream(pathOut));
     });
-  })
 };
 
+// unzip("./myfile.zip", "./unzipped")
+// .then((msg) => console.log(msg))
+// .then(readDir("unzipped"))
+// // .then((data) => data.forEach(image => { grayScale(image, "./grayscaled/test.png") }) )
+// .catch((err) => console.log(err))
+
+grayScale("unzipped/test.png", "unzipped/test_gray.png")
+
+// unzip(zipFilePath, pathUnzipped)
+// .then((msg) => console.log(msg))
+// .then(readDir(pathUnzipped))
+// .then((data) => console.log(data))
+// .then(grayScale(pathUnzipped, pathProcessed))
+// .catch((err) => console.log(err))
 
 module.exports = {
   unzip,
