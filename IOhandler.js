@@ -109,6 +109,7 @@ const grayScale = (pathIn, pathOut) => {
       new_path = path.join(`${pathOut}`, `${new_filename}`)
       console.log(new_path)
       this.pack().pipe(fs.createWriteStream(new_path));
+      resolve("Grayscaling complete")
     });
   })
 };
