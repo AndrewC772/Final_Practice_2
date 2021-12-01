@@ -23,17 +23,10 @@ const unzipper = require("unzipper"),
 const unzip = (pathIn, pathOut) => {
   return new Promise((resolve, reject) => {
     if (fs.existsSync(pathOut) == false) {
-      fs.mkdir(pathOut, (err) => {
-        if (err) {
-          reject(err)
-        } else {
-          console.log(`${pathOut} Folder made`)
-        }
-      })
+      fs.createReadStream(pathIn)
+      .pipe(unzipper.Extract({ path: pathOut }));
+      resolve("Extraction operation complete")
     }
-    fs.createReadStream(pathIn)
-    .pipe(unzipper.Extract({ path: pathOut }));
-    resolve("Extraction operation complete")
   })
 };
 

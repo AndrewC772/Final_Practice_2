@@ -23,8 +23,10 @@ const unzipper = require("unzipper"),
 const unzip = (pathIn, pathOut) => {
   return new Promise((resolve, reject) => {
       fs.createReadStream(pathIn)
-      .pipe(unzipper.Extract({ path: pathOut }));
-      resolve("Extraction operation complete")
+      .pipe(unzipper.Extract({ path: pathOut }))
+      .on('finish', function(err) {
+        resolve("Extraction operation complete")
+      });
   })
 };
 
@@ -104,7 +106,6 @@ const grayScale = (pathIn, pathOut) => {
           // this.data[idx + 3] = this.data[idx + 3] >> 1;
         }
       }
-      console.log("It did parse")
       new_filename = path.basename(pathIn)
       new_path = path.join(`${pathOut}`, `${new_filename}`)
       console.log(new_path)
