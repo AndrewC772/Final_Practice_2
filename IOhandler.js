@@ -24,7 +24,7 @@ const unzip = (pathIn, pathOut) => {
   return new Promise((resolve, reject) => {
       fs.createReadStream(pathIn)
       .pipe(unzipper.Extract({ path: pathOut }))
-      .on('finish', function(err) {
+      .on('finish', function() {
         resolve("Extraction operation complete")
       });
   })
